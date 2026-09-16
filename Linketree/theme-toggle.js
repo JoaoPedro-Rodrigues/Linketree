@@ -1,28 +1,50 @@
 // theme-toggle.js
-// Adiciona um botão fixo no canto da tela que muda a cor de fundo da página
-// quando o mouse passa por cima (hover).
+// Adiciona um botão fixo no canto da tela que alterna a página
+// entre tema claro e tema escuro ao passar o mouse (hover).
 
 document.addEventListener('DOMContentLoaded', function () {
-  // Paleta de cores que serão usadas no fundo da página
-  var backgrounds = [
-    'linear-gradient(135deg, #0a2a6e 0%, #1a4fc4 50%, #0d3b9e 100%)', // original
-    'linear-gradient(135deg, #6e0a2a 0%, #c41a4f 50%, #9e0d3b 100%)',
-    'linear-gradient(135deg, #0a6e2a 0%, #1ac44f 50%, #0d9e3b 100%)',
-    'linear-gradient(135deg, #6e5a0a 0%, #c4a41a 50%, #9e800d 100%)',
-    'linear-gradient(135deg, #3a0a6e 0%, #7a1ac4 50%, #5b0d9e 100%)'
-  ];
+  // Estilos do tema claro (injetados dinamicamente, sem tocar no style.css)
+  var lightThemeCSS = [
+    'body.light-theme {',
+    '  background: linear-gradient(135deg, #eef1f8 0%, #e3e7f4 50%, #d8deee 100%) !important;',
+    '}',
+    'body.light-theme .profile-name {',
+    '  color: #101a3d;',
+    '}',
+    'body.light-theme .profile-bio {',
+    '  color: rgba(16, 26, 61, 0.72);',
+    '}',
+    'body.light-theme .link-btn {',
+    '  background: rgba(16, 26, 61, 0.06);',
+    '  border-color: rgba(16, 26, 61, 0.16);',
+    '  color: #101a3d;',
+    '}',
+    'body.light-theme .link-btn:hover {',
+    '  background: rgba(16, 26, 61, 0.12);',
+    '}',
+    'body.light-theme .footer {',
+    '  color: rgba(16, 26, 61, 0.45);',
+    '}',
+    'body.light-theme #theme-toggle-btn {',
+    '  background: rgba(16, 26, 61, 0.08) !important;',
+    '  border-color: rgba(16, 26, 61, 0.25) !important;',
+    '  color: #101a3d !important;',
+    '}'
+  ].join('\n');
 
-  var originalBackground = document.body.style.background;
+  var styleTag = document.createElement('style');
+  styleTag.textContent = lightThemeCSS;
+  document.head.appendChild(styleTag);
 
   // Cria o botão
   var btn = document.createElement('button');
   btn.type = 'button';
-  btn.id = 'color-toggle-btn';
-  btn.textContent = '🎨';
-  btn.title = 'Passe o mouse para mudar a cor da página';
-  btn.setAttribute('aria-label', 'Mudar cor da página');
+  btn.id = 'theme-toggle-btn';
+  btn.textContent = '🌙';
+  btn.title = 'Passe o mouse para alternar entre tema claro e escuro';
+  btn.setAttribute('aria-label', 'Alternar tema claro/escuro');
 
-  // Estilo do botão (canto superior direito da tela, estilo "header")
+  // Estilo do botão (canto superior direito da tela)
   var style = btn.style;
   style.position = 'fixed';
   style.top = '16px';
@@ -42,23 +64,18 @@ document.addEventListener('DOMContentLoaded', function () {
   style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.25)';
   style.transition = 'background 0.2s ease, transform 0.15s ease';
 
-  // Ao passar o mouse (hover): muda a cor de fundo da página aleatoriamente
+  // Ao passar o mouse (hover): ativa o tema claro
   btn.addEventListener('mouseenter', function () {
-    var random = backgrounds[Math.floor(Math.random() * backgrounds.length)];
-    document.body.style.background = random;
-    style.background = 'rgba(255, 255, 255, 0.3)';
+    document.body.classList.add('light-theme');
+    btn.textContent = '☀️';
     style.transform = 'scale(1.08)';
   });
 
-  // Ao tirar o mouse: volta o botão ao normal (mantém a cor escolhida na página)
+  // Ao tirar o mouse: volta para o tema escuro (original)
   btn.addEventListener('mouseleave', function () {
-    style.background = 'rgba(255, 255, 255, 0.15)';
+    document.body.classList.remove('light-theme');
+    btn.textContent = '🌙';
     style.transform = 'scale(1)';
-  });
-
-  // Clique: volta ao fundo original
-  btn.addEventListener('click', function () {
-    document.body.style.background = originalBackground || '';
   });
 
   document.body.appendChild(btn);
